@@ -1,4 +1,6 @@
 const Customer = require('../models/Customer')
+const express = require('express');
+
 
 /**
  * @desc Create New Customer
@@ -6,37 +8,55 @@ const Customer = require('../models/Customer')
  * @access Public
  */
 
+
 const createCustomer = (req, res) => {
   try {
-    const { name, address, mobileNumber, alternateMobileNumber, date, amount, remarks, activityPerson, activityType } = req.body;
+    console.log(req.body);
 
-    if (!name || !address || !mobileNumber || !date || !amount) {
-      return res.status(400).json({ error: "Please provide name, address, mobile number, date, and amount." });
-    }
-
-    const newCustomer = {
-      name,
-      address,
-      mobileNumber,
-      alternateMobileNumber,
-      date,
-      amount,
-      remarks,
-      activityPerson,
-      activityType
-    };
-
-    Customer.createNewCustomer(customerData, (err, customerId) => {
-      if (err) {
-        return res.status(400).json({ success: false, error: err.message });
+    Customer.checkExistingCustomer(req.body.mobileNumber, (existingCustomer) => {
+      if (existingCustomer) { // Check if an existing customer with the same mobile number exists
+        return res.status(400).json({ error: "A customer with the same mobile number already exists." });
       }
-      return res.status(201).json({ success: true, customerId });
+
+      const { name, address, mobileNumber, alternateMobileNumber, date, amount, remarks, activityPerson, activityType, isAMCEnabled, AMCStartDate, AMCEndDate, lastServiceDate, nextServiceDate } = req.body;
+
+      const requiredFields = ['name', 'address', 'mobileNumber', 'date', 'amount'];
+      const missingFields = requiredFields.filter(field => !req.body[field]);
+
+      if (missingFields.length > 0) {
+        return res.status(400).json({ error: `Please provide the following field(s): ${missingFields.join(', ')}.` });
+      }
+
+      const newCustomer = {
+        name,
+        address,
+        mobileNumber,
+        alternateMobileNumber,
+        date,
+        amount,
+        remarks,
+        activityPerson,
+        activityType,
+        isAMCEnabled,
+        AMCStartDate,
+        AMCEndDate,
+        lastServiceDate,
+        nextServiceDate
+      };
+
+      Customer.createNewCustomer(newCustomer, (err, customerId) => {
+        if (err) {
+          return res.status(400).json({ success: false, error: err.message });
+        }
+        return res.status(201).json({ success: true, customerId });
+      });
     });
-  } catch {
+  } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "An error occurred while processing the request." });
   }
-}
+};
+
 
 /**
  * @desc Get all Customers

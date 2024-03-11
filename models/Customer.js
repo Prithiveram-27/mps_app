@@ -10,7 +10,12 @@ class Customer {
         amount,
         remarks,
         activityPerson,
-        activityType
+        activityType,
+        isAMCEnabled,
+        AMCStartDate,
+        AMCEndDate,
+        lastServiceDate,
+        nextServiceDate
     }) {
         this.name = name;
         this.address = address;
@@ -21,10 +26,15 @@ class Customer {
         this.remarks = remarks;
         this.activityPerson = activityPerson;
         this.activityType = activityType;
+        this.isAMCEnabled = isAMCEnabled;
+        this.AMCStartDate = AMCStartDate;
+        this.AMCEndDate = AMCEndDate;
+        this.lastServiceDate = lastServiceDate;
+        this.nextServiceDate = nextServiceDate;
     }
 
     static createNewCustomer(customerData, callback) {
-        const sql = 'INSERT INTO customers (name, address, mobile_number, alternate_mobile_number, date, amount, remarks, sales_service_person) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id';
+        const sql = 'INSERT INTO customers (name, address, mobilenumber, alternatemobilenumber, date, amount, remarks, activityperson, activitytype, isamcenabled, amcstartdate, amcenddate, lastservicedate, nextservicedate) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING id';
         const values = [
             customerData.name,
             customerData.address,
@@ -34,7 +44,12 @@ class Customer {
             customerData.amount,
             customerData.remarks,
             customerData.activityPerson,
-            customerData.activityType
+            customerData.activityType,
+            customerData.isAMCEnabled,
+            customerData.AMCStartDate,
+            customerData.AMCEndDate,
+            customerData.lastServiceDate,
+            customerData.nextServiceDate
         ];
         db.query(sql, values, (err, result) => {
             if (err) {
@@ -70,6 +85,18 @@ class Customer {
         });
     }
 
+    static checkExistingCustomer(mobileNumber, callback) {
+        const sql = 'SELECT * FROM customers WHERE mobileNumber = $1';
+        const values = [mobileNumber];
+
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                return callback(err);
+            }
+            const existingCustomer = result.rows[0];
+            return callback(existingCustomer);
+        });
+    }
 
 }
 

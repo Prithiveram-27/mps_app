@@ -8,6 +8,6 @@ const {
 
 router.get('/getAllCustomers', getAllCustomers);
 router.get('/getCustomersbyNameorMobilenumber/', getCustomersbyNameorMobilenumber)
-router.post('/', createCustomer);
+router.post('/createCustomer', createCustomer);
 
 module.exports = router;
