@@ -1,12 +1,14 @@
 const express = require("express");
 const app = express();
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const PORT = process.env.PORT || 3000;
 
 //MOUNT ROUTER
 const customersRouter = require('./routes/customers');
 const loginRoute = require('./routes/login')
 
+app.use(cors()); 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
