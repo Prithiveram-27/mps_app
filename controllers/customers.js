@@ -116,7 +116,7 @@ const updateCustomerDetailsById = (req, res) => {
       Customer.updateCustomerDetailsById(customerId, req.body, (err, result) => {
         if (err) {
           console.error("Error:", err);
-          res.status(500).json({ error: "An error occurred while updating customer details." });
+          res.status(500).json({ error: "An error occurred while updating customer details."});
         }else{
           res.status(200).json({ success: true, message: "Customer details updated successfully." });
         }
@@ -127,6 +127,39 @@ const updateCustomerDetailsById = (req, res) => {
       res.status(500).json({ error: "An error occurred while processing the request." });
     }
   }
+  const updateAmcDetailsById = (req, res) => {
+      try {
+        const customerId = req.query.customerId;
+        var currentDate = new Date();
+
+        const { name, address, mobileNumber, alternateMobileNumber, date, amount, remarks, activityPerson, activityType, isAMCEnabled, AMCStartDate, AMCEndDate, lastServiceDate, nextServiceDate } = req.body;
+
+        if((isAMCEnabled === false || isAMCEnabled === null) && AMCStartDate < currentDate && AMCEndDate < currentDate){
+          
+          isAMCEnabled = true;
+          AMCStartDate = currentDate;
+          AMCEndDate = currentDate.setFullYear(currentDate.getFullYear() + 1);
+
+          const newCustomer = {name,address, mobileNumber,alternateMobileNumber,date,amount,remarks,activityPerson,activityType,isAMCEnabled,AMCStartDate,AMCEndDate,lastServiceDate,nextServiceDate
+          };
+
+          Customer.updateAmcDetailsById(customerId, newCustomer, (err, result) => {
+            if (err) {
+              console.error("Error:", err);
+              res.status(500).json({ error: "An error occurred while updating customer details."});
+            }else{
+              res.status(200).json({ success: true, message: "Customer details updated successfully." });
+            }
+          });
+        }else{
+          res.status(200).json({ success: false, message: "AMC is already enabled for this customer"});
+        }
+      }catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ error: "An error occurred while processing the request." });
+      }
+    }
+  
 
 
 
@@ -138,4 +171,5 @@ module.exports = {
   getAllCustomers,
   getCustomersbyNameorMobilenumber,
   updateCustomerDetailsById,
+  updateAmcDetailsById,
 }

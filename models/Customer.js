@@ -125,7 +125,21 @@ class Customer {
         });
     }
     
-
+    static updateAmcDetailsById(customerId, customerData, callback) {
+        const sql = 'UPDATE customers SET isamcenabled = $1, amcstartdate = $2, amcenddate = $3 WHERE id = $4';
+        const values = [
+            customerData.isAMCEnabled,
+            customerData.AMCStartDate,
+            customerData.AMCEndDate,
+            customerId
+        ]
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                return callback(err, null);
+            }
+            return callback(null, result);
+        })
+    }
 }
 
 module.exports = Customer;
