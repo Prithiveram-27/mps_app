@@ -65,13 +65,18 @@ const createCustomer = (req, res) => {
  */
 
 const getAllCustomers = async (req, res) => {
-  Customer.getAllCustomers((err, customers) => {
-    if (err) {
-      return res.status(400).json({ success: false, error: err.message });
-    }
-    console.log("res", res);
-    return res.status(200).json({ success: true, customers });
-  });
+  try{
+     Customer.getAllCustomers((err, customers) => {
+        if (err) {
+          return res.status(400).json({ success: false, error: err.message });
+        }
+        console.log("res", res);
+        return res.status(200).json({ success: true, customers });
+        });
+  } catch (error) {
+  console.error("Error:", error);
+    res.status(500).json({ error: "An error occurred while processing the request." });
+}
 }
 
 /**
@@ -97,8 +102,33 @@ const getCustomersbyNameorMobilenumber = (req, res) => {
     console.error("Error:", error);
     res.status(500).json({ error: "An error occurred while processing the request." });
   }
+}
 
-};
+  /**
+ * @desc Update Customer details
+ * @route POST/api/customers
+ * @access Public
+ */
+
+const updateCustomerDetailsById = (req, res) => {
+    try {
+      const customerId = req.query.customerId;
+      Customer.updateCustomerDetailsById(customerId, req.body, (err, result) => {
+        if (err) {
+          console.error("Error:", err);
+          res.status(500).json({ error: "An error occurred while updating customer details." });
+        }else{
+          res.status(200).json({ success: true, message: "Customer details updated successfully." });
+        }
+      })
+
+    }catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ error: "An error occurred while processing the request." });
+    }
+  }
+
+
 
 
 
@@ -107,4 +137,5 @@ module.exports = {
   createCustomer,
   getAllCustomers,
   getCustomersbyNameorMobilenumber,
+  updateCustomerDetailsById,
 }

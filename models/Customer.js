@@ -98,6 +98,34 @@ class Customer {
         });
     }
 
+    static updateCustomerDetailsById(customerId, customerData, callback) {
+        const sql = 'UPDATE customers SET name = $1, address = $2, mobilenumber = $3, alternatemobilenumber = $4, date = $5, amount = $6, remarks = $7, activityperson = $8, activitytype = $9, isamcenabled = $10, amcstartdate = $11, amcenddate = $12, lastservicedate = $13, nextservicedate = $14 WHERE id = $15';
+        const values = [
+            customerData.name,
+            customerData.address,
+            customerData.mobileNumber,
+            customerData.alternateMobileNumber,
+            customerData.date,
+            customerData.amount,
+            customerData.remarks,
+            customerData.activityPerson,
+            customerData.activityType,
+            customerData.isAMCEnabled,
+            customerData.AMCStartDate,
+            customerData.AMCEndDate,
+            customerData.lastServiceDate,
+            customerData.nextServiceDate,
+            customerId 
+        ];
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                return callback(err, null);
+            }
+            return callback(null, result);
+        });
+    }
+    
+
 }
 
 module.exports = Customer;
