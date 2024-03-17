@@ -7,7 +7,7 @@ class Product {
         }  
 
         static getAllProducts(callback) {
-            const sql = 'SELECT * FROM product';
+            const sql = 'SELECT * FROM product ORDER BY productname ASC';
             db.query(sql, (err, result) => {
                 if (err) {
                     return callback(err, null);
@@ -40,6 +40,32 @@ class Product {
                 }
                 const existingproduct= result.rows[0];
                 return callback(existingproduct);
+            });
+        }
+
+        static deleteProductbyId(productId, callback) {
+            const sql = 'DELETE FROM product WHERE product_id = $1';
+            const values = [productId];
+            db.query(sql, values, (err, result) => {
+                if (err) {
+                    return callback(err);
+                }
+                return callback(null, result);
+            });
+        }
+
+        static updateProductbyId(productId, productData, callback) {
+            const sql = 'UPDATE product SET productname = $1, amount = $2 WHERE product_id = $3';
+            const values = [
+                productData.productname,
+                productData.amount,
+                productId
+            ];
+            db.query(sql, values, (err, result) => {
+                if (err) {
+                    return callback(err);
+                }
+                return callback(null, result);
             });
         }
     }
