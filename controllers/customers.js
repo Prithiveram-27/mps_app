@@ -18,8 +18,7 @@ const createCustomer = (req, res) => {
         return res.status(400).json({ error: "A customer with the same mobile number already exists." });
       }
 
-      const { name, address, mobileNumber, alternateMobileNumber, date, amount, remarks, activityPerson, activityType, isAMCEnabled, AMCStartDate, AMCEndDate, lastServiceDate, nextServiceDate } = req.body;
-
+      const {name,address, mobileNumber, alternateMobileNumber, date, amount, remarks, activityPerson, activityType, isAMCEnabled, AMCStartDate, AMCEndDate, lastServiceDate, nextServiceDate,brand } = req.body;
       const requiredFields = ['name', 'address', 'mobileNumber', 'date', 'amount'];
       const missingFields = requiredFields.filter(field => !req.body[field]);
 
@@ -41,9 +40,10 @@ const createCustomer = (req, res) => {
         AMCStartDate,
         AMCEndDate,
         lastServiceDate,
-        nextServiceDate
+        nextServiceDate,
+        brand
       };
-
+      console.log("newCustomer", newCustomer);
       Customer.createNewCustomer(newCustomer, (err, customerId) => {
         if (err) {
           return res.status(400).json({ success: false, error: err.message });
@@ -127,6 +127,7 @@ const updateCustomerDetailsById = (req, res) => {
       res.status(500).json({ error: "An error occurred while processing the request." });
     }
   }
+
   const updateAmcDetailsById = (req, res) => {
       try {
         const customerId = req.query.customerId;
@@ -160,7 +161,41 @@ const updateCustomerDetailsById = (req, res) => {
       }
     }
   
+    const getCustomerNotificationDetails = (req, res) => {
+      try {
+          Customer.getAllCustomers((err, customers) => {
+              if (err) {
+                return res.status(400).json({ success: false, error: err.message });
+              }
+              
+              const currentDate = new Date();
+              var notificationsList = [];
 
+              const notificationEndDate = new Date(currentDate);
+              notificationEndDate.setDate(notificationEndDate.getDate() - 2); // Notify up to 2 days before
+
+              const customersToNotify = customers.filter(customer => {
+                  const nextServiceDate = new Date(customer.nextservicedate);
+                  const daysUntilService = Math.floor((nextServiceDate - currentDate) / (1000 * 60 * 60 * 24));
+                  if(daysUntilService <= 2 && daysUntilService >= 0){
+                    notificationsList.push(customer);
+                  }else{
+                      return null;
+                  }
+              });
+
+              if(notificationsList.length > 0){
+                res.status(200).json({ success: true, customers: notificationsList});
+              }else{
+                res.status(200).json({ success: true, customers: []});
+              }
+
+        });
+        
+    } catch (error) {
+        console.error('Error sending notifications:', error);
+    }
+  }
 
 
 
@@ -172,4 +207,5 @@ module.exports = {
   getCustomersbyNameorMobilenumber,
   updateCustomerDetailsById,
   updateAmcDetailsById,
+  getCustomerNotificationDetails,
 }

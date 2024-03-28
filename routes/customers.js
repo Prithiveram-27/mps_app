@@ -6,11 +6,12 @@ const {
     getAllCustomers,
     updateCustomerDetailsById,
     updateAmcDetailsById,
+    getCustomerNotificationDetails,
 } = require('../controllers/customers');
 
 router.get('/getAllCustomers', getAllCustomers);
 router.get('/getCustomersbyNameorMobilenumber/', getCustomersbyNameorMobilenumber)
-router.post('/createCustomer', createCustomer);
+router.get('/getCustomerNotificationDetails', getCustomerNotificationDetails);
 router.post('/updateCustomerDetailsById', updateCustomerDetailsById);
 router.post('/updateAmcDetailsById', updateAmcDetailsById);
 

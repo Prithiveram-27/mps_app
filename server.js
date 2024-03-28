@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const Customer = require('./models/Customer')
 const PORT = process.env.PORT || 3000;
 
 //MOUNT ROUTER
