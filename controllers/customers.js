@@ -18,13 +18,19 @@ const createCustomer = (req, res) => {
         return res.status(400).json({ error: "A customer with the same mobile number already exists." });
       }
 
-      const {name,address, mobileNumber, alternateMobileNumber, date, amount, remarks, activityPerson, activityType, isAMCEnabled, AMCStartDate, AMCEndDate, lastServiceDate, nextServiceDate,brand } = req.body;
-      const requiredFields = ['name', 'address', 'mobileNumber', 'date', 'amount'];
+      const {name,address, mobileNumber, alternateMobileNumber, date, amount, remarks, activityPerson, activityType, amc, amcStartDate, amcEndDate, lastServiceDate, nextServiceDate,brand } = req.body;
+      const requiredFields =    ['name', 'address', 'mobileNumber', 'date', 'amount'];
       const missingFields = requiredFields.filter(field => !req.body[field]);
 
       if (missingFields.length > 0) {
         return res.status(400).json({ error: `Please provide the following field(s): ${missingFields.join(', ')}.` });
       }
+
+      var isAMCEnabled = false;
+
+    if(amc == "enabled" || amc == "Enabled"){
+      isAMCEnabled = true;
+    }
 
       const newCustomer = {
         name,
@@ -37,8 +43,8 @@ const createCustomer = (req, res) => {
         activityPerson,
         activityType,
         isAMCEnabled,
-        AMCStartDate,
-        AMCEndDate,
+        amcStartDate,
+        amcEndDate,
         lastServiceDate,
         nextServiceDate,
         brand

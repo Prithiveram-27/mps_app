@@ -12,6 +12,7 @@ const {
 router.get('/getAllCustomers', getAllCustomers);
 router.get('/getCustomersbyNameorMobilenumber/', getCustomersbyNameorMobilenumber)
 router.get('/getCustomerNotificationDetails', getCustomerNotificationDetails);
+router.post('/createCustomer', createCustomer);
 router.post('/updateCustomerDetailsById', updateCustomerDetailsById);
 router.post('/updateAmcDetailsById', updateAmcDetailsById);
 
