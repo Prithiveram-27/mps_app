@@ -102,7 +102,7 @@ class Customer {
     }
 
     static updateCustomerDetailsById(customerId, customerData, callback) {
-        const sql = 'UPDATE customers SET name = $1, address = $2, mobilenumber = $3, alternatemobilenumber = $4, date = $5, amount = $6, remarks = $7, activityperson = $8, activitytype = $9, isamcenabled = $10, amcstartdate = $11, amcenddate = $12, lastservicedate = $13, nextservicedate = $14 WHERE id = $15';
+        const sql = 'UPDATE customers SET name = $1, address = $2, mobilenumber = $3, alternatemobilenumber = $4, date = $5, amount = $6, remarks = $7, activityperson = $8, activitytype = $9, isamcenabled = $10, amcstartdate = $11, amcenddate = $12, lastservicedate = $13, nextservicedate = $14, brand = $15 WHERE id = $16';
         const values = [
             customerData.name,
             customerData.address,
@@ -114,10 +114,11 @@ class Customer {
             customerData.activityPerson,
             customerData.activityType,
             customerData.isAMCEnabled,
-            customerData.AMCStartDate,
-            customerData.AMCEndDate,
+            customerData.amcStartDate,
+            customerData.amcEndDate,
             customerData.lastServiceDate,
             customerData.nextServiceDate,
+            customerData.brand,
             customerId 
         ];
         db.query(sql, values, (err, result) => {
@@ -142,6 +143,17 @@ class Customer {
             }
             return callback(null, result);
         })
+    }
+
+    static deleteCustomerById(customerId, callback) {
+        const sql = 'DELETE FROM customers WHERE id = $1';
+        const values = [customerId];
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                return callback(err, null);
+            }
+            return callback(null, result);
+        });
     }
 }
 

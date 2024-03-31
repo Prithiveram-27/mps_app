@@ -119,6 +119,13 @@ const getCustomersbyNameorMobilenumber = (req, res) => {
 const updateCustomerDetailsById = (req, res) => {
     try {
       const customerId = req.query.customerId;
+      var isAMCEnabled = false;
+
+      if(req.body.amc == "enabled" || req.body.amc == "Enabled"){
+        req.body.isAMCEnabled = true;
+      }else{
+        req.body.isAMCEnabled = false;
+      }
       Customer.updateCustomerDetailsById(customerId, req.body, (err, result) => {
         if (err) {
           console.error("Error:", err);
@@ -203,7 +210,17 @@ const updateCustomerDetailsById = (req, res) => {
     }
   }
 
-
+  const deleteCustomerById = (req, res) => {
+    const customerId = req.query.customerId;
+    Customer.deleteCustomerById(customerId, (err, result) => {
+      if (err) {
+        console.error("Error:", err);
+        res.status(500).json({ error: "An error occurred while deleting customer." });
+      } else {
+        res.status(200).json({ success: true, message: "Customer deleted successfully." });
+      }
+    });
+  }
 
 
 
@@ -214,4 +231,5 @@ module.exports = {
   updateCustomerDetailsById,
   updateAmcDetailsById,
   getCustomerNotificationDetails,
+  deleteCustomerById
 }
