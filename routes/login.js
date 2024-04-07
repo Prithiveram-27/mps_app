@@ -4,24 +4,95 @@ const bodyParser = require('body-parser');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 router.use(bodyParser.json());
 
+function generateOTP() {
+    return Math.floor(1000 + Math.random() * 9000);
+}
+
+// Object to store OTPs temporarily
+const otpStore = {};
+
+function generateOTP() {
+    return Math.floor(1000 + Math.random() * 9000);
+}
+
 router.post('/register', async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { username, email, password, phoneNumber } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
+        const otp = generateOTP();
 
-        query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword], (error, results) => {
+        const insertQuery = `
+            INSERT INTO users (
+                username,
+                email,
+                password_hash,
+                phone_number,
+                is_admin,
+                created_dt_tm,
+                updated_dt_tm,
+                active_ind,
+                updated_cnt
+            ) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true, 0)
+        `;
+
+        const values = [username, email, hashedPassword, phoneNumber, false]; // Assuming the new user is not an admin by default
+
+        // Execute the SQL query to insert user details into the database
+        await query(insertQuery, values);
+
+        otpStore[email] = otp;
+
+        // Send OTP to user's email
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'mpswaterpurifier@gmail.com',
+                pass: 'your_password'
+            }
+        });
+
+        const mailOptions = {
+            from: 'mpswaterpurifier@gmail.com',
+            to: email,
+            subject: 'OTP Verification',
+            text: `Your OTP for registration is: ${otp}`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-                console.error('Error registering user:', error);
+                console.error('Error sending OTP:', error);
                 res.status(500).send('Internal Server Error');
             } else {
-                res.status(201).send('User registered successfully.');
+                console.log('OTP sent:', info.response);
+                res.status(201).send('User registered successfully. Please check your email for OTP verification.');
             }
         });
     } catch (error) {
-        console.error(error);
+        console.error('Error registering user:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/verifyOTP', async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        // Retrieve the OTP from the temporary store
+        const actualOTP = otpStore[email];
+
+        if (actualOTP && otp === actualOTP.toString()) {
+            delete otpStore[email]; // Remove OTP from store after verification
+            res.status(200).send('OTP verified successfully.');
+        } else {
+            // If OTP verification fails, respond with error code
+            res.status(400).send('OTP verification failed. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error verifying OTP:', error);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -37,7 +108,6 @@ router.post('/login', async (req, res) => {
                 const user = results[0];
 
                 if (user && await bcrypt.compare(password, user.password)) {
-                    // Generate a JWT token for authentication
                     const token = jwt.sign({ userId: user.id }, 'your-secret-key', { expiresIn: '480s' });
 
                     res.status(200).json({ token });
