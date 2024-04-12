@@ -94,6 +94,18 @@ class Customer {
             return callback(null, result.rows[0]);
         });
     }
+
+    static getCustomersByIds(customerIds, callback) {
+        const placeholders = customerIds.map((_, index) => `$${index + 1}`).join(',');
+        const sql = `SELECT * FROM customers WHERE id IN (${placeholders})`;
+        const values = customerIds;
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                return callback(err, null);
+            }
+            return callback(null, result.rows);
+        });
+    }
     
     static checkExistingCustomer(mobileNumber, callback) {
         const sql = 'SELECT * FROM customers WHERE mobileNumber = $1';

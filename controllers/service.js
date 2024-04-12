@@ -108,28 +108,32 @@ const getAllServices = async (req, res) => {
                 return res.status(404).json({ success: false, error: "No services found." });
             }
 
-            const customerId = services[0].customerid;
+            const customerIds = services.map(service => service.customerid);
 
-            // Fetch customer details
-            Customer.getCustomerById(customerId, (err, customer) => {
+            Customer.getCustomersByIds(customerIds, (err, customers) => {
                 if (err) {
                     console.error("Error fetching customer details:", err);
                     return res.status(500).json({ error: "An error occurred while fetching customer details." });
                 }
 
-                // Combine service data with customer data
-                const serviceData = {
-                    service: services[0],
-                    customer: customer
-                };
-                return res.status(200).json({ success: true, data: serviceData });
+                const serviceDataList = services.map(service => {
+                    const customer = customers.find(customer => customer.id === service.customerid);
+                    return {
+                        service: service,
+                        customer: customer
+                    };
+                });
+
+                return res.status(200).json({ success: true, data: serviceDataList });
             });
+
         });
     } catch (error) {
         console.error("Error:", error);
         res.status(500).json({ error: "An error occurred while processing the request." });
     }
 };
+
 
 module.exports = {
     createService,
