@@ -2,10 +2,7 @@ const db = require('../config/db');
 
 class Service {
     constructor({
-                    name,
-                    address,
-                    mobileNumber,
-                    alternateMobileNumber,
+                    customerId,
                     date,
                     servicePerson,
                     productBrand,
@@ -14,10 +11,7 @@ class Service {
                     problemDescription,
 
                 }) {
-        this.name = name;
-        this.address = address;
-        this.mobileNumber = mobileNumber;
-        this.alternateMobileNumber = alternateMobileNumber;
+        this.customerId = customerId;
         this.date = date;
         this.servicePerson = servicePerson;
         this.productBrand = productBrand;
@@ -27,12 +21,9 @@ class Service {
     }
 
     static createService(serviceData, callback) {
-        const sql = 'INSERT INTO service (name, address, mobile_number, alternate_mobile_number, date, service_person, product_brand, problem_type,problem_status,problem_description) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING service_id';
+        const sql = 'INSERT INTO service (customer_id, date, service_person, product_name, problem_type,product_status,problem_description) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING service_id';
         const values = [
-            serviceData.name,
-            serviceData.address,
-            serviceData.mobileNumber,
-            serviceData.alternateMobileNumber,
+            serviceData.id,
             serviceData.date,
             serviceData.servicePerson,
             serviceData.productBrand,
@@ -49,7 +40,7 @@ class Service {
     }
 
     static getAll(callback) {
-        const sql = 'SELECT * FROM service ORDER BY serviceName ASC';
+        const sql = 'SELECT * FROM service ORDER BY date ASC';
         db.query(sql, (err, result) => {
             if (err) {
                 return callback(err, null);

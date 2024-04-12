@@ -3,27 +3,22 @@ const Service = require('../models/Service');
 const createService = async (req, res) => {
     try {
         const {
-            name,
-            address,
-            mobileNumber,
-            alternateMobileNumber,
+            id,
             date,
             servicePerson,
             productBrand,
             problemType,
             problemStatus,
-            problemDescription
+            problemDescription,
+            
         } = req.body;
 
-        if (!name || !address || !mobileNumber || !date || !servicePerson || !problemType) {
+        if (!id|| !date || !servicePerson || !problemType) {
             return res.status(400).json({ error: "Name, address, mobile number, date, service person, and problem type are required." });
         }
 
         const newService = {
-            name,
-            address,
-            mobileNumber,
-            alternateMobileNumber,
+            id,
             date,
             servicePerson,
             productBrand,
@@ -32,7 +27,7 @@ const createService = async (req, res) => {
             problemDescription
         };
 
-        Service.create(newService, (err, service) => {
+        Service.createService(newService, (err, service) => {
             if (err) {
                 return res.status(400).json({ success: false, error: err.message });
             }
