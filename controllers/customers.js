@@ -110,6 +110,29 @@ const getCustomersbyNameorMobilenumber = (req, res) => {
   }
 }
 
+/**
+ * @desc Get Customers by name or mobilenumber
+ * @route GET/api/customers
+ * @access Private
+ */
+const getCustomerById = (req, res) => {
+  try {
+    const customerId = req.query.customerId;
+    Customer.getCustomerById(customerId, (err, customer) => {
+      if (err) {
+        console.error("Error:", err);
+        res.status(500).json({ error: "An error occurred while fetching customers." });
+      } else {
+        res.status(200).json({ customer });
+      }
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "An error occurred while processing the request." });
+  }
+}
+
+
   /**
  * @desc Update Customer details
  * @route POST/api/customers
@@ -227,6 +250,7 @@ const updateCustomerDetailsById = (req, res) => {
 module.exports = {
   createCustomer,
   getAllCustomers,
+  getCustomerById,
   getCustomersbyNameorMobilenumber,
   updateCustomerDetailsById,
   updateAmcDetailsById,

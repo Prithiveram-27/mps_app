@@ -1,4 +1,5 @@
 const Service = require('../models/Service');
+const Customer = require('../models/Customer');
 
 const createService = async (req, res) => {
     try {
@@ -95,13 +96,34 @@ const updateServiceById = async (req, res) => {
     }
 };
 
+
 const getAllServices = async (req, res) => {
     try {
-        Service.getAll((err, service) => {
+        Service.getAll((err, services) => {
             if (err) {
                 return res.status(400).json({ success: false, error: err.message });
             }
-            return res.status(200).json({ success: true, service });
+
+            if (!services || services.length === 0) {
+                return res.status(404).json({ success: false, error: "No services found." });
+            }
+
+            const customerId = services[0].customerid;
+
+            // Fetch customer details
+            Customer.getCustomerById(customerId, (err, customer) => {
+                if (err) {
+                    console.error("Error fetching customer details:", err);
+                    return res.status(500).json({ error: "An error occurred while fetching customer details." });
+                }
+
+                // Combine service data with customer data
+                const serviceData = {
+                    service: services[0],
+                    customer: customer
+                };
+                return res.status(200).json({ success: true, data: serviceData });
+            });
         });
     } catch (error) {
         console.error("Error:", error);

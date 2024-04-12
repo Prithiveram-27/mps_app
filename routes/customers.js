@@ -3,6 +3,7 @@ const router = express.Router();
 const {
     createCustomer,
     getCustomersbyNameorMobilenumber,
+    getCustomerById,
     getAllCustomers,
     updateCustomerDetailsById,
     updateAmcDetailsById,
@@ -11,6 +12,7 @@ const {
 } = require('../controllers/customers');
 
 router.get('/getAllCustomers', getAllCustomers);
+router.get('/getCustomerById/', getCustomerById)
 router.get('/getCustomersbyNameorMobilenumber/', getCustomersbyNameorMobilenumber)
 router.get('/getCustomerNotificationDetails', getCustomerNotificationDetails);
 router.post('/createCustomer', createCustomer);

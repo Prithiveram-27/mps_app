@@ -20,6 +20,6 @@ app.use('/api/v1/customers', customersRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/service', serviceRouter);
 
-app.listen(PORT, () => {
+app.listen(PORT,'0.0.0.0', () => {
     console.log(`Server is Up and running in port ${PORT}`)
 })

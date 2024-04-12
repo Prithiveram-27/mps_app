@@ -74,12 +74,8 @@ class Customer {
     }
 
     static getByCustomerNameOrPhoneNumber(searchTerm, callback) {
-        console.log("Inside getByCustomerNameOrPhoneNumber");
-        console.log("searchTerm insided query", searchTerm);
         const sql = 'SELECT * FROM customers WHERE name ILIKE $1 OR mobilenumber ILIKE $2';
         const searchValue = `%${searchTerm}%`;
-        console.log("sql", sql);
-        console.log("searchValue", searchValue);
         db.query(sql, [searchValue, searchValue], (err, result) => {
             if (err) {
                 return callback(err, null);
@@ -88,6 +84,17 @@ class Customer {
         });
     }
 
+    static getCustomerById(customerId, callback) {
+        const sql = 'SELECT * FROM customers WHERE id = $1';
+        const values = [customerId];
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                return callback(err, null);
+            }
+            return callback(null, result.rows[0]);
+        });
+    }
+    
     static checkExistingCustomer(mobileNumber, callback) {
         const sql = 'SELECT * FROM customers WHERE mobileNumber = $1';
         const values = [mobileNumber];
