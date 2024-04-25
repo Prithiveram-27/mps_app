@@ -21,7 +21,7 @@ class Service {
     }
 
     static createService(serviceData, callback) {
-        const sql = 'INSERT INTO service (customer_id, date, service_person, product_name, problem_type,product_status,problem_description) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING service_id';
+        const sql = 'INSERT INTO service (customerid, date, serviceperson, productname, problemtype,productstatus,problemdescription) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING serviceid';
         const values = [
             serviceData.id,
             serviceData.date,
@@ -50,7 +50,7 @@ class Service {
     }
 
     static deleteServiceById(serviceId, callback) {
-        const sql = 'DELETE FROM service WHERE service_id = $1';
+        const sql = 'DELETE FROM service WHERE serviceid = $1';
         const values = [serviceId];
         db.query(sql, values, (err, result) => {
             if (err) {
@@ -61,18 +61,15 @@ class Service {
     }
 
     static updateServiceById(serviceId, serviceData, callback) {
-        const sql = 'UPDATE service SET name = $1, address = $2, mobileNumber = $3, alternateMobileNumber = $4, date = $5, servicePerson = $6, productBrand = $7, problemType = $8, problemStatus = $9, problemDescription = $10 WHERE service_id = $11';
+        const sql = 'UPDATE service SET  date = $1, servicePerson = $2, productname = $3, problemType = $4, productStatus = $5, problemDescription = $6 WHERE serviceid = $7';
         const values = [
-            serviceData.name,
-            serviceData.address,
-            serviceData.mobileNumber,
-            serviceData.alternateMobileNumber,
             serviceData.date,
-            serviceData.servicePerson,
-            serviceData.productBrand,
-            serviceData.problemType,
-            serviceData.problemStatus,
-            serviceData.problemDescription
+            serviceData.serviceperson,
+            serviceData.productname,
+            serviceData.problemtype,
+            serviceData.productstatus,
+            serviceData.problemdescription,
+            serviceData.serviceid
         ];
         db.query(sql, values, (err, result) => {
             if (err) {

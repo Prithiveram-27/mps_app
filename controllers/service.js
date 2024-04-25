@@ -42,7 +42,7 @@ const createService = async (req, res) => {
 
 const deleteServiceById = async (req, res) => {
     try {
-        const serviceId = req.params.id;
+        const serviceId = req.query.serviceId;
         Service.deleteServiceById(serviceId, (err, result) => {
             if (err) {
                 return res.status(400).json({ success: false, error: err.message });
@@ -57,31 +57,25 @@ const deleteServiceById = async (req, res) => {
 
 const updateServiceById = async (req, res) => {
     try {
-        const serviceId = req.params.id;
+        const serviceId = req.query.serviceId;
         const {
-            name,
-            address,
-            mobileNumber,
-            alternateMobileNumber,
             date,
-            servicePerson,
-            productBrand,
-            problemType,
-            problemStatus,
-            problemDescription
+            serviceperson,
+            productname,
+            problemtype,
+            productstatus,
+            problemdescription,
+            serviceid
         } = req.body;
 
         const updatedService = {
-            name,
-            address,
-            mobileNumber,
-            alternateMobileNumber,
             date,
-            servicePerson,
-            productBrand,
-            problemType,
-            problemStatus,
-            problemDescription
+            serviceperson,
+            productname,
+            problemtype,
+            productstatus,
+            problemdescription,
+            serviceid
         };
 
         Service.updateServiceById(serviceId, updatedService, (err, result) => {
