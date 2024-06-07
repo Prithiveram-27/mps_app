@@ -35,7 +35,7 @@ class Service {
             if (err) {
                 return callback(err, null);
             }
-            return callback(null, result.rows[0].id);
+            return callback(null, result.rows[0].serviceid);
         });
     }
 
@@ -78,5 +78,37 @@ class Service {
             return callback(null, result);
         });
     }
+
+    static getServicesByCustomerDetails(mobileNumber, name, callback) {
+        const customerSql = `
+            SELECT id FROM customers WHERE mobilenumber = $1 OR name = $2
+        `;
+        const customerValues = [mobileNumber, name];
+
+        db.query(customerSql, customerValues, (err, customerResult) => {
+            if (err) {
+                return callback(err, null);
+            }
+
+            if (customerResult.rows.length === 0) {
+                return callback(new Error('Customer not found'), null);
+            }
+
+            const customerId = customerResult.rows[0].id;
+            const serviceSql = `
+                SELECT * FROM service WHERE customerid = $1
+            `;
+            const serviceValues = [customerId];
+
+            db.query(serviceSql, serviceValues, (err, serviceResult) => {
+                if (err) {
+                    return callback(err, null);
+                }
+                return callback(null, serviceResult.rows);
+            });
+        });
+    }
+
+
 }
 module.exports = Service;

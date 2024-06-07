@@ -29,7 +29,7 @@ const createService = async (req, res) => {
         };
 
         Service.createService(newService, (err, service) => {
-            if (err) {
+             if (err) {
                 return res.status(400).json({ success: false, error: err.message });
             }
             return res.status(201).json({ success: true, service });
@@ -128,10 +128,30 @@ const getAllServices = async (req, res) => {
     }
 };
 
+const getServiceRecordsByCustomer = (req, res) => {
+    const { mobileNumber, name } = req.query;
+
+    if (!mobileNumber && !name) {
+        return res.status(400).json({ error: 'Mobile number or name is required' });
+    }
+
+    Service.getServicesByCustomerDetails(mobileNumber, name, (err, services) => {
+        if (err) {
+            if (err.message === 'Customer not found') {
+                return res.status(404).json({ error: 'Customer not found' });
+            }
+            return res.status(500).json({ error: 'An error occurred while retrieving service records' });
+        }
+
+        res.status(200).json(services);
+    });
+};
+
 
 module.exports = {
     createService,
     deleteServiceById,
     updateServiceById,
-    getAllServices
+    getAllServices,
+    getServiceRecordsByCustomer
 };
