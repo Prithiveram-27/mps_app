@@ -143,9 +143,23 @@ const getServiceRecordsByCustomer = (req, res) => {
             return res.status(500).json({ error: 'An error occurred while retrieving service records' });
         }
 
-        res.status(200).json(services);
+        Customer.getCustomersByMobileNumberOrName(mobileNumber, name, (err, customers) => {
+            if (err) {
+                console.error('Error fetching customer details:', error);
+                return res.status(500).json({ error: 'An error occurred while retrieving customer details' });
+            }
+
+            const customer = customers.length > 0 ? customers[0] : null;
+
+            const serviceDataList = services.map(service => ({
+                service: service
+            }));
+
+            res.status(200).json({ success: true, customer: customer, services: serviceDataList });
+        });
     });
 };
+
 
 
 module.exports = {

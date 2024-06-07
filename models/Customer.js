@@ -174,6 +174,29 @@ class Customer {
             return callback(null, result);
         });
     }
+
+    static getCustomersByMobileNumberOrName(mobileNumber, name, callback) {
+        let sql;
+        let values;
+
+        if (mobileNumber) {
+            sql = 'SELECT * FROM customers WHERE mobilenumber ILIKE $1';
+            values = [`%${mobileNumber}%`];
+        } else if (name) {
+            sql = 'SELECT * FROM customers WHERE name ILIKE $1';
+            values = [`%${name}%`];
+        } else {
+            // No search criteria provided
+            return callback('Mobile number or name is required', null);
+        }
+
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                return callback(err, null);
+            }
+            return callback(null, result.rows);
+        });
+    }
 }
 
 module.exports = Customer;
