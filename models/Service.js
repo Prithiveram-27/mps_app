@@ -9,7 +9,7 @@ class Service {
                     problemType,
                     problemStatus,
                     problemDescription,
-
+                    serviceStatus,
                 }) {
         this.customerId = customerId;
         this.date = date;
@@ -18,10 +18,11 @@ class Service {
         this.problemType = problemType;
         this.problemStatus = problemStatus;
         this.problemDescription = problemDescription;
+        this.serviceStatus = serviceStatus;
     }
 
     static createService(serviceData, callback) {
-        const sql = 'INSERT INTO service (customerid, date, serviceperson, productname, problemtype,productstatus,problemdescription) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING serviceid';
+        const sql = 'INSERT INTO service (customerid, date, serviceperson, productname, problemtype,productstatus,problemdescription,servicestatus) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING serviceid';
         const values = [
             serviceData.id,
             serviceData.date,
@@ -29,7 +30,8 @@ class Service {
             serviceData.productBrand,
             serviceData.problemType,
             serviceData.problemStatus,
-            serviceData.problemDescription
+            serviceData.problemDescription,
+            Enums.ServiceStatus.NEW,
         ];
         db.query(sql, values, (err, result) => {
             if (err) {
@@ -78,6 +80,18 @@ class Service {
             return callback(null, result);
         });
     }
+
+    static updateServiceStatusById(serviceId, serviceStatus, callback) {
+        const sql = 'UPDATE service SET servicestatus = $1 WHERE serviceid = $2';
+        const values = [serviceStatus, serviceId];
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                return callback(err);
+            }
+            return callback(null, result.rows.id);
+        });
+    }
+    
 
     static getServicesByCustomerDetails(mobileNumber, name, callback) {
         const customerSql = `

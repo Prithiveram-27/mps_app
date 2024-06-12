@@ -160,6 +160,23 @@ const getServiceRecordsByCustomer = (req, res) => {
     });
 };
 
+const updateServiceStatus = (req, res) => {
+    const { serviceId } = req.query;
+    const { serviceStatus } = req.body;
+
+    if (!serviceId || !serviceStatus) {
+        return res.status(400).json({ error: 'Service ID and status are required' });
+    }
+
+    Service.updateServiceStatusById(serviceId, serviceStatus, (err, result) => {
+        if (err) {
+            console.error('Error updating service status:', err);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        return res.status(200).json({ message: 'Service status updated successfully', result:'success' });
+    });
+};
 
 
 module.exports = {
@@ -167,5 +184,6 @@ module.exports = {
     deleteServiceById,
     updateServiceById,
     getAllServices,
-    getServiceRecordsByCustomer
+    getServiceRecordsByCustomer,
+    updateServiceStatus
 };
