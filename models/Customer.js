@@ -197,6 +197,17 @@ class Customer {
             return callback(null, result.rows);
         });
     }
+
+    static getTotalCustomers(callback) {
+        const sql = 'SELECT COUNT(*) FROM customers';
+        db.pool.query(sql, (err, result) => {
+          if (err) {
+            return callback(err, null);
+          }
+          const totalCustomers = parseInt(result.rows[0].count);
+          callback(null, totalCustomers);
+        });
+      }
 }
 
 module.exports = Customer;

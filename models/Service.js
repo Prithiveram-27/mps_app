@@ -129,6 +129,43 @@ class Service {
         });
     }
 
+    static getTotalServicesCompleted(callback) {
+        const sql = 'SELECT COUNT(*) FROM service WHERE servicestatus = $1';
+        const values = ['completed'];
+        db.pool.query(sql, values, (err, result) => {
+          if (err) {
+            return callback(err, null);
+          }
+          const totalCompletedServices = parseInt(result.rows[0].count);
+          callback(null, totalCompletedServices);
+        });
+      }
+    
+      static getTotalPendingServices(callback) {
+        const sql = 'SELECT COUNT(*) FROM service WHERE servicestatus = $1';
+        const values = ['pending'];
+        db.pool.query(sql, values, (err, result) => {
+          if (err) {
+            return callback(err, null);
+          }
+          const totalPendingServices = parseInt(result.rows[0].count);
+          callback(null, totalPendingServices);
+        });
+      }
+    
+      static getTotalCancelledServices(callback) {
+        const sql = 'SELECT COUNT(*) FROM service WHERE servicestatus = $1';
+        const values = ['cancelled'];
+        db.pool.query(sql, values, (err, result) => {
+          if (err) {
+            return callback(err, null);
+          }
+          const totalCancelledServices = parseInt(result.rows[0].count);
+          callback(null, totalCancelledServices);
+        });
+      }
+    
+
 
 }
 module.exports = Service;
