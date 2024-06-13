@@ -37,7 +37,7 @@ class Service {
             Enums.ServiceStatus.NEW,
             serviceData.amount,
         ];
-        db.query(sql, values, (err, result) => {
+        db.pool.query(sql, values, (err, result) => {
             if (err) {
                 return callback(err, null);
             }
@@ -47,7 +47,7 @@ class Service {
 
     static getAll(callback) {
         const sql = 'SELECT * FROM service ORDER BY date ASC';
-        db.query(sql, (err, result) => {
+        db.pool.query(sql, (err, result) => {
             if (err) {
                 return callback(err, null);
             }
@@ -58,7 +58,7 @@ class Service {
     static deleteServiceById(serviceId, callback) {
         const sql = 'DELETE FROM service WHERE serviceid = $1';
         const values = [serviceId];
-        db.query(sql, values, (err, result) => {
+        db.pool.query(sql, values, (err, result) => {
             if (err) {
                 return callback(err);
             }
@@ -78,7 +78,7 @@ class Service {
             serviceData.amount,
             serviceData.serviceid
         ];
-        db.query(sql, values, (err, result) => {
+        db.pool.query(sql, values, (err, result) => {
             if (err) {
                 return callback(err);
             }
@@ -90,7 +90,7 @@ class Service {
     static updateServiceStatusById(serviceId, serviceStatus, callback) {
         const sql = 'UPDATE service SET servicestatus = $1 WHERE serviceid = $2';
         const values = [serviceStatus, serviceId];
-        db.query(sql, values, (err, result) => {
+        db.pool.query(sql, values, (err, result) => {
             if (err) {
                 return callback(err);
             }
@@ -105,7 +105,7 @@ class Service {
         `;
         const customerValues = [mobileNumber, name];
 
-        db.query(customerSql, customerValues, (err, customerResult) => {
+        db.pool.query(customerSql, customerValues, (err, customerResult) => {
             if (err) {
                 return callback(err, null);
             }
@@ -120,7 +120,7 @@ class Service {
             `;
             const serviceValues = [customerId];
 
-            db.query(serviceSql, serviceValues, (err, serviceResult) => {
+            db.pool.query(serviceSql, serviceValues, (err, serviceResult) => {
                 if (err) {
                     return callback(err, null);
                 }

@@ -1,5 +1,6 @@
 
 const { Pool } = require('pg');
+const crypto = require('crypto');
 
 const pool = new Pool({
     user: 'postgres',
@@ -19,4 +20,10 @@ pool.connect((err) => {
     console.log('Connected to MySQL database');
 });
 
-module.exports = pool;
+// JWT secret key
+const jwtSecret = crypto.randomBytes(32).toString('hex');
+
+module.exports = {
+    pool,
+    jwtSecret,
+};

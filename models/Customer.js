@@ -54,7 +54,7 @@ class Customer {
             customerData.nextServiceDate,
             customerData.brand
         ];
-        db.query(sql, values, (err, result) => {
+        db.pool.query(sql, values, (err, result) => {
             if (err) {
                 return callback(err, null);
             }
@@ -65,7 +65,7 @@ class Customer {
     static getAllCustomers(callback) {
         console.log("Inside getall");
         const sql = 'SELECT * FROM customers';
-        db.query(sql, (err, result) => {
+        db.pool.query(sql, (err, result) => {
             if (err) {
                 return callback(err, null);
             }
@@ -76,7 +76,7 @@ class Customer {
     static getByCustomerNameOrPhoneNumber(searchTerm, callback) {
         const sql = 'SELECT * FROM customers WHERE name ILIKE $1 OR mobilenumber ILIKE $2';
         const searchValue = `%${searchTerm}%`;
-        db.query(sql, [searchValue, searchValue], (err, result) => {
+        db.pool.query(sql, [searchValue, searchValue], (err, result) => {
             if (err) {
                 return callback(err, null);
             }
@@ -87,7 +87,7 @@ class Customer {
     static getCustomerById(customerId, callback) {
         const sql = 'SELECT * FROM customers WHERE id = $1';
         const values = [customerId];
-        db.query(sql, values, (err, result) => {
+        db.pool.query(sql, values, (err, result) => {
             if (err) {
                 return callback(err, null);
             }
@@ -99,7 +99,7 @@ class Customer {
         const placeholders = customerIds.map((_, index) => `$${index + 1}`).join(',');
         const sql = `SELECT * FROM customers WHERE id IN (${placeholders})`;
         const values = customerIds;
-        db.query(sql, values, (err, result) => {
+        db.pool.query(sql, values, (err, result) => {
             if (err) {
                 return callback(err, null);
             }
@@ -111,7 +111,7 @@ class Customer {
         const sql = 'SELECT * FROM customers WHERE mobileNumber = $1';
         const values = [mobileNumber];
 
-        db.query(sql, values, (err, result) => {
+        db.pool.query(sql, values, (err, result) => {
             if (err) {
                 return callback(err);
             }
@@ -140,7 +140,7 @@ class Customer {
             customerData.brand,
             customerId 
         ];
-        db.query(sql, values, (err, result) => {
+        db.pool.query(sql, values, (err, result) => {
             if (err) {
                 return callback(err, null);
             }
@@ -156,7 +156,7 @@ class Customer {
             customerData.AMCEndDate,
             customerId
         ]
-        db.query(sql, values, (err, result) => {
+        db.pool.query(sql, values, (err, result) => {
             if (err) {
                 return callback(err, null);
             }
@@ -167,7 +167,7 @@ class Customer {
     static deleteCustomerById(customerId, callback) {
         const sql = 'DELETE FROM customers WHERE id = $1';
         const values = [customerId];
-        db.query(sql, values, (err, result) => {
+        db.pool.query(sql, values, (err, result) => {
             if (err) {
                 return callback(err, null);
             }
@@ -190,7 +190,7 @@ class Customer {
             return callback('Mobile number or name is required', null);
         }
 
-        db.query(sql, values, (err, result) => {
+        db.pool.query(sql, values, (err, result) => {
             if (err) {
                 return callback(err, null);
             }

@@ -10,6 +10,7 @@ const customersRouter = require('./routes/customers');
 const loginRoute = require('./routes/login')
 const productRouter = require('./routes/product')
 const serviceRouter = require('./routes/service')
+const userRouter = require('./routes/User')
 
 app.use(cors()); 
 app.use(bodyParser.json());
@@ -19,6 +20,7 @@ app.use('/login', loginRoute);
 app.use('/api/v1/customers', customersRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/service', serviceRouter);
+app.use('/api/v1/user',userRouter);
 
 app.listen(PORT,'0.0.0.0', () => {
     console.log(`Server is Up and running in port ${PORT}`)

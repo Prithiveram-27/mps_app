@@ -8,7 +8,7 @@ class Product {
 
         static getAllProducts(callback) {
             const sql = 'SELECT * FROM product ORDER BY productname ASC';
-            db.query(sql, (err, result) => {
+            db.pool.query(sql, (err, result) => {
                 if (err) {
                     return callback(err, null);
                 }
@@ -22,7 +22,7 @@ class Product {
                 productData.productname,
                 productData.amount
             ];
-            db.query(sql, values, (err, result) => {
+            db.pool.query(sql, values, (err, result) => {
                 if (err) {
                     return callback(err, null);
                 }
@@ -34,7 +34,7 @@ class Product {
             const sql = 'SELECT * FROM product WHERE productname = $1';
             const values = [productname];
     
-            db.query(sql, values, (err, result) => {
+            db.pool.query(sql, values, (err, result) => {
                 if (err) {
                     return callback(err);
                 }
@@ -46,7 +46,7 @@ class Product {
         static deleteProductbyId(productId, callback) {
             const sql = 'DELETE FROM product WHERE product_id = $1';
             const values = [productId];
-            db.query(sql, values, (err, result) => {
+            db.pool.query(sql, values, (err, result) => {
                 if (err) {
                     return callback(err);
                 }
@@ -61,7 +61,7 @@ class Product {
                 productData.amount,
                 productId
             ];
-            db.query(sql, values, (err, result) => {
+            db.pool.query(sql, values, (err, result) => {
                 if (err) {
                     return callback(err);
                 }
