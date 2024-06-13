@@ -10,6 +10,7 @@ class Service {
                     problemStatus,
                     problemDescription,
                     serviceStatus,
+                    amount,
                 }) {
         this.customerId = customerId;
         this.date = date;
@@ -19,10 +20,12 @@ class Service {
         this.problemStatus = problemStatus;
         this.problemDescription = problemDescription;
         this.serviceStatus = serviceStatus;
+        this.amount = amount;
+
     }
 
     static createService(serviceData, callback) {
-        const sql = 'INSERT INTO service (customerid, date, serviceperson, productname, problemtype,productstatus,problemdescription,servicestatus) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING serviceid';
+        const sql = 'INSERT INTO service (customerid, date, serviceperson, productname, problemtype,productstatus,problemdescription,servicestatus,amount) VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9) RETURNING serviceid';
         const values = [
             serviceData.id,
             serviceData.date,
@@ -32,6 +35,7 @@ class Service {
             serviceData.problemStatus,
             serviceData.problemDescription,
             Enums.ServiceStatus.NEW,
+            serviceData.amount,
         ];
         db.query(sql, values, (err, result) => {
             if (err) {
@@ -63,14 +67,15 @@ class Service {
     }
 
     static updateServiceById(serviceId, serviceData, callback) {
-        const sql = 'UPDATE service SET  date = $1, servicePerson = $2, productname = $3, problemType = $4, productStatus = $5, problemDescription = $6 WHERE serviceid = $7';
+        const sql = 'UPDATE service SET date = $1, servicePerson = $2, productname = $3, problemType = $4, productStatus = $5, problemDescription = $6, amount = $7 WHERE serviceid = $8';
         const values = [
             serviceData.date,
             serviceData.serviceperson,
             serviceData.productname,
             serviceData.problemtype,
-            serviceData.productstatus,
+            serviceData.serviceStatus, 
             serviceData.problemdescription,
+            serviceData.amount,
             serviceData.serviceid
         ];
         db.query(sql, values, (err, result) => {
@@ -80,6 +85,7 @@ class Service {
             return callback(null, result);
         });
     }
+    
 
     static updateServiceStatusById(serviceId, serviceStatus, callback) {
         const sql = 'UPDATE service SET servicestatus = $1 WHERE serviceid = $2';

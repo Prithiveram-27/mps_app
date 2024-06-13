@@ -1,3 +1,7 @@
 // add service status column - 11/06/2024
 ALTER TABLE service
 ADD COLUMN servicestatus VARCHAR(20);  
+
+// add service status column - 12/06/2024
+ALTER TABLE service
+ADD COLUMN amount VARCHAR(100); 
