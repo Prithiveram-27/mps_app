@@ -4,48 +4,52 @@ const User = require('../models/User');
 const { jwtSecret } = require('../config/db');
 
 const login = async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password } = req.body; 
+
     try {
-        // Find user by username
-        User.findByUsernameAndPassword(username,password ,async (err, user) => {
+        User.findByUsernameOrMobileAndPassword(username, password, (err, user) => {
             if (err) {
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({ error: 'Internal Server Error' });
             }
             if (!user) {
-                return res.status(401).json({ error: 'Invalid username or password' });
-            }
-
-            // Verify password
-            const passwordMatch = await bcrypt.compare(password, user.password_hash);
-            if (!passwordMatch) {
-                return res.status(401).json({ error: 'Invalid username or password' });
+                return res.status(401).json({ error: 'Invalid username/phone number or password' });
             }
 
             // Generate JWT
             const token = jwt.sign({ userId: user.user_id, username: user.username }, jwtSecret, { expiresIn: '1h' });
-            
+
             res.status(200).json({ token });
         });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
 const createUser = async (req, res) => {
     try {
-        const { username, email, password, is_admin } = req.body;
+        const { username, email, password, mobilenumber, is_admin } = req.body;
         const password_hash = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, email, password_hash, is_admin });
-        User.createNewUser(newUser, (err, userId) => {
+
+        User.checkExistingUser(username,mobilenumber, (err, existingUser) => {
             if (err) {
                 return res.status(500).json({ error: err.message });
             }
-            res.status(201).json({ user_id: userId });
+            if (existingUser) {
+                return res.status(400).json({ error: 'User with this username or mobilenumber already exists' });
+            }
+
+            const newUser = new User({ username, email, password_hash, mobilenumber, is_admin });
+            User.createNewUser(newUser, (err, userId) => {
+                if (err) {
+                    return res.status(500).json({ error: err.message });
+                }
+                res.status(201).json({ user_id: userId });
+            });
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-};
+}
 
 const getAllUsers = (req, res) => {
     User.getAllUsers((err, users) => {

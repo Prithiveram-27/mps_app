@@ -8,6 +8,7 @@ ADD COLUMN amount VARCHAR(100);
 
 //add DOB and DOM - 13/06/2024
 ALTER TABLE users
+ADD COLUMN mobilenumber varchar(20),
 ADD COLUMN address varchar(250),
 ADD COLUMN date_of_birth DATE,
 ADD COLUMN marriage_date DATE;
