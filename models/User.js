@@ -48,6 +48,31 @@ class User {
         });
     }
 
+    static getUserById(id, callback) {
+        const sql = 'SELECT * FROM users WHERE user_id = $1';
+        const values = [id];
+        db.pool.query(sql, values, (err, result) => {
+            if (err) {
+                return callback(err, null);
+            }
+            if (result.rows.length === 0) {
+                return callback(null, null); // User not found
+            }
+            return callback(null, result.rows);
+        });
+    }
+
+    static getUsersByNameOrMobileNumber(searchTerm, callback) {
+        const sql = 'SELECT * FROM users WHERE username = $1 OR mobilenumber = $2';
+        const values = [searchTerm, searchTerm];
+        db.pool.query(sql, values, (err, result) => {
+            if (err) {
+                return callback(err, null);
+            }
+            return callback(null, result.rows);
+        });
+    }
+
     static createNewUser(userData, callback) {
         const sql = 'INSERT INTO users (username, email, mobilenumber, password_hash,is_admin) VALUES ($1, $2, $3, $4, $5) RETURNING user_id';
         const values = [

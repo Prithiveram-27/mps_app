@@ -61,13 +61,26 @@ const getAllUsers = (req, res) => {
 };
 
 const getUser = (req, res) => {
-    const { id } = req.params;
-    User.checkExistingUser(id, (user) => {
+    const { id } = req.query;
+    User.getUserById(id,(err, user) => {
         if (user) {
             res.status(200).json(user);
         } else {
             res.status(404).json({ error: 'User not found' });
         }
+    });
+};
+
+const getUsersByNameOrMobileNumber = (req, res) => {
+    const { searchTerm } = req.query; // Use req.query to get the search term from query parameters
+    User.getUsersByNameOrMobileNumber(searchTerm, (err, users) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (!users || users.length === 0) {
+            return res.status(404).json({ error: 'No users found' });
+        }
+        res.status(200).json(users);
     });
 };
 
@@ -100,6 +113,7 @@ module.exports = {
     createUser,
     getUser,
     getAllUsers,
+    getUsersByNameOrMobileNumber,
     deleteUserById,
     updateUserById,
 }

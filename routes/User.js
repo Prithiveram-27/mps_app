@@ -5,9 +5,10 @@ const router = express.Router();
 
 router.post('/createUser', userController.createUser);
 router.get('/getAllUsers', userController.getAllUsers);
-router.get('/:id', userController.getUser);
-router.put('/:id', userController.updateUserById);
-router.delete('/:id', userController.deleteUserById);
+router.get('/getUserById', userController.getUser);
+router.get('/getUsersByNameOrMobileNumber', userController.getUsersByNameOrMobileNumber);
+router.put('/updateUserById', userController.updateUserById);
+router.delete('/deleteUserById', userController.deleteUserById);
 
 router.post('/:id', userController.login);
 
