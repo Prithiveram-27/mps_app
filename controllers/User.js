@@ -27,7 +27,7 @@ const login = async (req, res) => {
 
 const createUser = async (req, res) => {
     try {
-        const { username, email, password, mobilenumber, is_admin } = req.body;
+        const { username, email, password, is_admin, date_of_birth, marriage_date, address, mobilenumber } = req.body;
         const password_hash = await bcrypt.hash(password, 10);
 
         User.checkExistingUser(username,mobilenumber, (err, existingUser) => {
@@ -38,7 +38,7 @@ const createUser = async (req, res) => {
                 return res.status(400).json({ error: 'User with this username or mobilenumber already exists' });
             }
 
-            const newUser = new User({ username, email, password_hash, mobilenumber, is_admin });
+            const newUser = new User({ username, email, password_hash, is_admin, date_of_birth, marriage_date, address, mobilenumber });
             User.createNewUser(newUser, (err, userId) => {
                 if (err) {
                     return res.status(500).json({ error: err.message });
@@ -85,10 +85,10 @@ const getUsersByNameOrMobileNumber = (req, res) => {
 };
 
 const updateUserById = async (req, res) => {
-    const { id } = req.params;
-    const { username, email, password, is_admin } = req.body;
+    const id = req.query.id;
+    const { username, email, password, is_admin, date_of_birth, marriage_date, address, mobilenumber } = req.body;
     const password_hash = await bcrypt.hash(password, 10);
-    const updatedUserData = { username, email, password_hash, is_admin };
+    const updatedUserData = { username, email, password_hash, is_admin, date_of_birth, marriage_date, address, mobilenumber};
     User.updateUserById(id, updatedUserData, (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -97,14 +97,19 @@ const updateUserById = async (req, res) => {
     });
 };
 
-const deleteUserById = (req, res) => {
-    const { id } = req.params;
-    User.deleteUserById(id, (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.status(204).send();
-    });
+const deleteUserById = async (req, res) => {
+    try {
+        const userId = req.query.id;
+        User.deleteUserById(userId, (err, result) => {
+            if (err) {
+                return res.status(400).json({ success: false, error: err.message });
+            }
+            return res.status(200).json({ success: true, result });
+        });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ error: "An error occurred while processing the request." });
+    }
 };
 
 

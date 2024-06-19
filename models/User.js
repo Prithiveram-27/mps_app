@@ -2,12 +2,23 @@ const db = require('../config/db');
 const bcrypt = require('bcrypt');
 
 class User {
-    constructor({ username, email,mobilenumber, password_hash, is_admin }) {
+    constructor({username,
+                 email,
+                 mobilenumber,
+                 password_hash,
+                 is_admin,
+                 date_of_birth,
+                 marriage_date,
+                 address}) {
         this.username = username;
         this.email = email;
-        this.mobilenumber = mobilenumber;
         this.password_hash = password_hash;
         this.is_admin = is_admin;
+        this.date_of_birth = date_of_birth;
+        this.marriage_date = marriage_date;
+        this.address = address;
+        this.mobilenumber = mobilenumber;
+
     }
 
     static async findByUsernameOrMobileAndPassword(identifier, password, callback) {
@@ -74,13 +85,16 @@ class User {
     }
 
     static createNewUser(userData, callback) {
-        const sql = 'INSERT INTO users (username, email, mobilenumber, password_hash,is_admin) VALUES ($1, $2, $3, $4, $5) RETURNING user_id';
+        const sql = 'INSERT INTO users (username, email, password_hash,is_admin, date_of_birth, marriage_date, address, mobilenumber) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING user_id';
         const values = [
             userData.username,
             userData.email,
-            userData.mobilenumber,
             userData.password_hash,
-            userData.is_admin
+            userData.is_admin,
+            userData.date_of_birth,
+            userData.marriage_date,
+            userData.address,
+            userData.mobilenumber
         ];
         db.pool.query(sql, values, (err, result) => {
             if (err) {
@@ -114,12 +128,16 @@ class User {
     }
 
     static updateUserById(userId, userData, callback) {
-        const sql = 'UPDATE users SET username = $1, email = $2, password_hash = $3, is_admin = $4 WHERE user_id = $5';
+        const sql = 'UPDATE users SET username = $1, email = $2, password_hash = $3, is_admin = $4, date_of_birth = $5, marriage_date = $6, address = $7, mobilenumber = $8 WHERE user_id = $9';
         const values = [
             userData.username,
             userData.email,
             userData.password_hash,
             userData.is_admin,
+            userData.date_of_birth,
+            userData.marriage_date,
+            userData.address,
+            userData.mobilenumber,
             userId
         ];
         db.pool.query(sql, values, (err, result) => {
