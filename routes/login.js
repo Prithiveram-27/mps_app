@@ -109,7 +109,8 @@ router.post('/login', async (req, res) => {
 
                 if (user && await bcrypt.compare(password, user.password)) {
                     const token = jwt.sign({ userId: user.id }, 'your-secret-key', { expiresIn: '480s' });
-
+                    // const customerToNotify = await sendLastDateNotification(req, res);
+                    // res.status(200).json({ token, customerToNotify });
                     res.status(200).json({ token });
                 } else {
                     res.status(401).send('Invalid credentials.');
@@ -121,5 +122,45 @@ router.post('/login', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
+const sendLastDateNotification = async (req, res) => {
+    try {
+        Customer.getAllCustomers((err, customers) => {
+            if (err) {
+                return res.status(400).json({ success: false, error: err.message });
+            }
+
+            const startDaysBefore = 1;
+            const endDaysBefore = 2;
+
+            const filteredCustomers = filterCustomersByAMCServiceEndDate(customers, startDaysBefore, endDaysBefore);
+
+            return res.status(200).json({ success: true, customers: filteredCustomers });
+        });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ error: "An error occurred while processing the request." });
+    }
+};
+
+const filterCustomersByAMCServiceEndDate = (customers, startDaysBefore, endDaysBefore) => {
+    const currentDate = new Date();
+    return customers.filter(customer => {
+        console.log("Customer", customer);
+        const nextservicedate = new Date(customer.nextservicedate);
+        return isWithinNotificationRange(currentDate, nextservicedate, startDaysBefore, endDaysBefore);
+    });
+};
+
+const isWithinNotificationRange = (currentDate, endDate, startDaysBefore, endDaysBefore) => {
+    console.log("inside isWithinNotificationRange");
+    const startNotificationDate = new Date(currentDate);
+    startNotificationDate.setDate(startNotificationDate.getDate() + startDaysBefore);
+
+    const endNotificationDate = new Date(currentDate);
+    endNotificationDate.setDate(endNotificationDate.getDate() + endDaysBefore);
+
+    return endDate >= startNotificationDate && endDate <= endNotificationDate;
+};
 
 module.exports = router;
