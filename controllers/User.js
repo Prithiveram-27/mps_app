@@ -2,23 +2,25 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const { jwtSecret } = require('../config/db');
+const Customer = require("../models/Customer");
 
 const login = async (req, res) => {
     const { username, password } = req.body; 
 
     try {
-        User.findByUsernameOrMobileAndPassword(username, password, (err, user) => {
+        User.findByUsernameOrMobileAndPassword(username, password,  async (err, user) => {
             if (err) {
-                return res.status(500).json({ error: 'Internal Server Error' });
+                return res.status(500).json({error: 'Internal Server Error'});
             }
             if (!user) {
-                return res.status(401).json({ error: 'Invalid username/phone number or password' });
+                return res.status(401).json({error: 'Invalid username/phone number or password'});
             }
-
             // Generate JWT
-            const token = jwt.sign({ userId: user.user_id, username: user.username }, jwtSecret, { expiresIn: '1h' });
+            const token = jwt.sign({userId: user.user_id, username: user.username}, jwtSecret, {expiresIn: '1h'});
 
-            res.status(200).json({ "token":token,"user":user });
+            const filteredCustomers = await sendLastDateNotification(req, res);
+
+            res.status(200).json({token, filteredCustomers});
         });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
@@ -39,6 +41,7 @@ const createUser = async (req, res) => {
             }
 
             const newUser = new User({ username, email, password_hash, is_admin, date_of_birth, marriage_date, address, mobilenumber });
+            console.log(newUser);
             User.createNewUser(newUser, (err, userId) => {
                 if (err) {
                     return res.status(500).json({ error: err.message });
@@ -85,6 +88,7 @@ const getUsersByNameOrMobileNumber = (req, res) => {
 };
 
 const updateUserById = async (req, res) => {
+    console.log("inside", req);
     const id = req.query.id;
     const { username, email, password, is_admin, date_of_birth, marriage_date, address, mobilenumber } = req.body;
     const password_hash = await bcrypt.hash(password, 10);
@@ -110,6 +114,47 @@ const deleteUserById = async (req, res) => {
         console.error("Error:", error);
         res.status(500).json({ error: "An error occurred while processing the request." });
     }
+};
+
+const sendLastDateNotification = async (req, res) => {
+    try {
+        const customers = await new Promise((resolve, reject) => {
+            Customer.getAllCustomers((err, customers) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(customers);
+                }
+            });
+        });
+        
+       return filterCustomersByAMCServiceEndDate(customers);
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ error: "An error occurred while processing the request." });
+    }
+};
+
+const filterCustomersByAMCServiceEndDate = (customers) => {
+    const currentDate = new Date();
+    const startDaysBefore = -1;
+    const endDaysBefore = 5;
+    return customers.filter(customer => {
+        const amcServiceEndDate = new Date(customer.nextservicedate);
+        return isWithinNotificationRange(currentDate, amcServiceEndDate, startDaysBefore, endDaysBefore);
+    }).filter(Boolean);
+};
+
+const isWithinNotificationRange = (currentDate, endDate, startDaysBefore, endDaysBefore) => {
+    const startNotificationDate = new Date(currentDate);
+    startNotificationDate.setDate(startNotificationDate.getDate() + startDaysBefore);
+
+    const endNotificationDate = new Date(currentDate);
+    endNotificationDate.setDate(endNotificationDate.getDate() + endDaysBefore);
+
+    const endDateObj = new Date(endDate);
+
+    return endDateObj >= startNotificationDate && endDateObj <= endNotificationDate;
 };
 
 
