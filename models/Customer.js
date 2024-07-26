@@ -16,7 +16,10 @@ class Customer {
         AMCEndDate,
         lastServiceDate,
         nextServiceDate,
-        brand
+        brand,
+        isEmienabled,
+        emiAmount,
+        emiMonths
     }) {
         this.name = name;
         this.address = address;
@@ -33,10 +36,13 @@ class Customer {
         this.lastServiceDate = lastServiceDate;
         this.nextServiceDate = nextServiceDate;
         this.brand = brand;
+        this.isEmienabled = isEmienabled;
+        this.emiAmount = emiAmount;
+        this.emiMonths = emiMonths;
     }
 
     static createNewCustomer(customerData, callback) {
-        const sql = 'INSERT INTO customers (name, address, mobilenumber, alternatemobilenumber, date, amount, remarks, activityperson, activitytype, isamcenabled, amcstartdate, amcenddate, lastservicedate, nextservicedate,brand) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,$15) RETURNING id';
+        const sql = 'INSERT INTO customers (name, address, mobilenumber, alternatemobilenumber, date, amount, remarks, activityperson, activitytype, isamcenabled, amcstartdate, amcenddate, lastservicedate, nextservicedate,brand,isEmienabled, emiAmount, emiMonths) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,$15,$16,$17,$18) RETURNING id';
         const values = [
             customerData.name,
             customerData.address,
@@ -53,6 +59,9 @@ class Customer {
             customerData.lastServiceDate,
             customerData.nextServiceDate,
             customerData.brand
+            customerData.isEmienabled,
+            customerData.emiAmount,
+            customerData.emiMonths
         ];
         db.pool.query(sql, values, (err, result) => {
             if (err) {
