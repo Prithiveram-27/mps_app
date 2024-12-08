@@ -18,7 +18,7 @@ const createCustomer = (req, res) => {
         return res.status(400).json({ error: "A customer with the same mobile number already exists." });
       }
 
-      const {name,address, mobileNumber, alternateMobileNumber, date, amount, remarks, activityPerson, activityType, amc, amcStartDate, amcEndDate, lastServiceDate, nextServiceDate,brand } = req.body;
+      const {name,address, mobileNumber, alternateMobileNumber, date, amount, remarks, activityPerson, activityType, amc, amcStartDate, amcEndDate, lastServiceDate, nextServiceDate,brand, isEmienabled, emiAmount, emiMonths  } = req.body;
       const requiredFields =    ['name', 'address', 'mobileNumber', 'date', 'amount'];
       const missingFields = requiredFields.filter(field => !req.body[field]);
 
@@ -47,7 +47,10 @@ const createCustomer = (req, res) => {
         amcEndDate,
         lastServiceDate,
         nextServiceDate,
-        brand
+        brand,
+        isEmienabled,
+        emiAmount,
+        emiMonths
       };
       console.log("newCustomer", newCustomer);
       Customer.createNewCustomer(newCustomer, (err, customerId) => {
